@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>דאשבורד שירות לקוחות</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-title">
+      <div class="header-badge">🎧</div>
+      <div>
+        <h1>דאשבורד פניות שירות לקוחות</h1>
+        <div class="header-meta">עדכון אחרון: <span id="lastUpdated"></span></div>
+      </div>
+    </div>
+    <button class="theme-toggle" id="themeToggle">🌓 מצב תצוגה</button>
+  </header>
+
+  <main>
+    <!-- KPI Cards -->
+    <section class="kpi-grid" id="kpiGrid"></section>
+
+    <!-- Filters -->
+    <section class="panel">
+      <div class="filters-bar">
+        <input type="text" id="searchInput" placeholder="חיפוש לפי מספר פנייה, נושא, לקוח או אימייל..." />
+        <select id="statusFilter">
+          <option value="all">כל הסטטוסים</option>
+        </select>
+        <select id="priorityFilter">
+          <option value="all">כל העדיפויות</option>
+          <option value="דחופה">דחופה</option>
+          <option value="גבוהה">גבוהה</option>
+          <option value="בינונית">בינונית</option>
+          <option value="נמוכה">נמוכה</option>
+        </select>
+        <select id="categoryFilter">
+          <option value="all">כל הקטגוריות</option>
+        </select>
+        <select id="agentFilter">
+          <option value="all">כל הנציגים</option>
+        </select>
+        <div class="range-group">
+          <button class="range-btn" data-range="7">7 ימים</button>
+          <button class="range-btn active" data-range="30">30 ימים</button>
+          <button class="range-btn" data-range="45">45 ימים</button>
+          <button class="range-btn" data-range="all">הכל</button>
+        </div>
+        <button class="btn-reset" id="resetFilters">איפוס סינון</button>
+      </div>
+    </section>
+
+    <!-- Charts -->
+    <section class="charts-row">
+      <div class="panel">
+        <div class="panel-title">מגמת פניות — 14 הימים האחרונים <span class="hint">נפתחו לעומת נפתרו</span></div>
+        <div id="trendChart"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">פילוח לפי קטגוריה</div>
+        <div id="categoryChart"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">פילוח לפי סטטוס</div>
+        <div id="statusChart"></div>
+      </div>
+    </section>
+
+    <!-- Tickets table -->
+    <section class="panel">
+      <div class="panel-title">
+        <span>פניות לקוחות</span>
+        <span class="hint" id="resultsCount"></span>
+      </div>
+      <div class="table-wrap">
+        <table class="tickets-table">
+          <thead>
+            <tr>
+              <th data-sort="id">מס' פנייה</th>
+              <th data-sort="subject">נושא / לקוח</th>
+              <th data-sort="categoryLabel">קטגוריה</th>
+              <th data-sort="priority">עדיפות</th>
+              <th data-sort="status">סטטוס</th>
+              <th data-sort="agentName">נציג</th>
+              <th data-sort="createdAt" class="sort-desc">נפתחה</th>
+              <th data-sort="satisfaction">שביעות רצון</th>
+            </tr>
+          </thead>
+          <tbody id="ticketsBody"></tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        <span id="pageInfo"></span>
+        <div class="pagination">
+          <button id="prevPage">◀ הקודם</button>
+          <button id="nextPage">הבא ▶</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Agent performance -->
+    <section class="panel">
+      <div class="panel-title">ביצועי נציגים</div>
+      <div class="table-wrap">
+        <table class="tickets-table">
+          <thead>
+            <tr>
+              <th>נציג</th>
+              <th>סה"כ פניות</th>
+              <th>פתוחות</th>
+              <th>נפתרו</th>
+              <th>זמן פתרון ממוצע</th>
+              <th>שביעות רצון</th>
+              <th>חריגות SLA</th>
+            </tr>
+          </thead>
+          <tbody id="agentsBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">דאשבורד תרגול — נתוני דמו בלבד, ללא חיבור למערכת אמיתית</footer>
+
+  <!-- Ticket detail modal -->
+  <div class="modal-overlay" id="ticketModal">
+    <div class="modal-box">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      const toggle = document.getElementById("themeToggle");
+      const root = document.documentElement;
+      const saved = localStorage.getItem("dashboard-theme");
+      if (saved) root.setAttribute("data-theme", saved);
+      toggle.addEventListener("click", () => {
+        const current = root.getAttribute("data-theme") ||
+          (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        const next = current === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        try { localStorage.setItem("dashboard-theme", next); } catch (e) {}
+      });
+    })();
+  </script>
+</body>
+</html>
